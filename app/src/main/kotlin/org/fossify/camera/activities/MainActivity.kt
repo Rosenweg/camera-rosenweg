@@ -976,7 +976,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
             setupPreviewImage(true)
             Intent(BROADCAST_REFRESH_MEDIA).apply {
                 putExtra(REFRESH_PATH, path)
-                `package` = "org.fossify.gallery"
+                `package` = "ch.rosenweg4303.gallery"
                 sendBroadcast(this)
             }
         }

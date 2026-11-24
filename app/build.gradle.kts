@@ -125,7 +125,8 @@ android {
         )
     }
 
-    namespace = project.property("APP_ID").toString()
+    // Rosenweg: nur die applicationId ist eigen (ch.rosenweg4303.camera); Kotlin-Namensraum wie im Original.
+    namespace = "org.fossify.camera"
 
     lint {
         checkReleaseBuilds = false

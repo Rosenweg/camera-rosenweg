@@ -186,6 +186,10 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupSavePhotoVideoLocation() = binding.apply {
+        // Rosenweg: Ortsdaten gibt es nicht (keine Standort-Berechtigung).
+        config.savePhotoVideoLocation = false
+        settingsSavePhotoVideoLocationHolder.visibility = android.view.View.GONE
+        return@apply
         settingsSavePhotoVideoLocation.isChecked = config.savePhotoVideoLocation
         settingsSavePhotoVideoLocationHolder.setOnClickListener {
             val willEnableSavePhotoVideoLocation = !config.savePhotoVideoLocation
