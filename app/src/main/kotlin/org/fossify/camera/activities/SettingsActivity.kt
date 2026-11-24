@@ -45,6 +45,7 @@ class SettingsActivity : SimpleActivity() {
         setupSavePhotoMetadata()
         setupSavePhotoVideoLocation()
         setupSavePhotosFolder()
+        setupNextcloud()
         setupPhotoQuality()
         setupCaptureMode()
         updateTextColors(binding.settingsHolder)
@@ -218,6 +219,19 @@ class SettingsActivity : SimpleActivity() {
     private fun updateSavePhotoVideoLocationConfig(enabled: Boolean) {
         binding.settingsSavePhotoVideoLocation.isChecked = enabled
         config.savePhotoVideoLocation = enabled
+    }
+
+    /** Rosenweg: Anmeldung an der Nextcloud, damit Fotos und Videos hochgeladen werden. */
+    private fun setupNextcloud() = binding.apply {
+        val konto = ch.rosenweg4303.cloud.KontoSpeicher(this@SettingsActivity).laden()
+        settingsNextcloud.text = if (konto == null) {
+            getString(R.string.rw_nextcloud_aus)
+        } else {
+            getString(R.string.rw_nextcloud_an, konto.benutzer)
+        }
+        settingsNextcloudHolder.setOnClickListener {
+            startActivity(android.content.Intent(this@SettingsActivity, ch.rosenweg4303.cloud.AnmeldenActivity::class.java))
+        }
     }
 
     private fun setupSavePhotosFolder() = binding.apply {
