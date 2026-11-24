@@ -1,6 +1,7 @@
 package org.fossify.camera.activities
 
 import org.fossify.commons.extensions.showErrorToast
+import org.fossify.commons.extensions.toast
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.camera.extensions.neuestesAusNextcloud
 import org.fossify.camera.extensions.kameraHochladen
@@ -519,10 +520,16 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     private fun showLastMediaPreview() {
         // Rosenweg: lokales Bild schon hochgeladen und geloescht -> das Neueste aus der Nextcloud
-        val nc = mNcNeueste
-        if (nc != null && (mPreviewUri == null || !lokalVorhanden(mPreviewUri!!))) {
+        if (mPreviewUri == null || !lokalVorhanden(mPreviewUri!!)) {
+            val foto = isInPhotoMode()
             ensureBackgroundThread {
                 try {
+                    val nc = neuestesAusNextcloud(foto) ?: mNcNeueste
+                    if (nc == null) {
+                        toast(org.fossify.commons.R.string.no_items_found)
+                        return@ensureBackgroundThread
+                    }
+                    mNcNeueste = nc
                     val datei = ch.rosenweg4303.cloud.Ablage.lokaleKopie(this, nc.pfad)
                     runOnUiThread { openPathIntent(datei.absolutePath, false, BuildConfig.APPLICATION_ID) }
                 } catch (e: Exception) {
