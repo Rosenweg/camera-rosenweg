@@ -2,4 +2,6 @@
 <paths>
     <external-path name="external_files" path="."/>
     <root-path name="external_files" path="/storage/" />
+    <!-- Rosenweg: aus der Nextcloud geladene Kopien (Ablage.lokaleKopie) -->
+    <cache-path name="rosenweg_ablage" path="rosenweg-ablage/" />
 </paths>
