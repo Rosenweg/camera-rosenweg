@@ -131,7 +131,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     override fun onResume() {
         super.onResume()
-        if (rosenwegAnmeldungNoetig() && ch.rosenweg4303.cloud.RosenwegAnmeldeSchirm.zeigenFallsNoetig(this)) return
+        if (rosenwegAnmeldungNoetig() && ch.rosenweg4303.cloud.RosenwegAnmeldeSchirm.zeigenFallsNoetig(this, nextcloud = true)) return
         if (mRosenwegKameraOffen) {
             mRosenwegKameraOffen = false
             tryInitCamera()
