@@ -8,7 +8,7 @@
 - [Überblick](#überblick)
 - [Plattformen](#plattformen)
 - [Bedienung](#bedienung)
-- [Geteilte Rosenweg-Telefone](#geteilte-rosenweg-telefone)
+- [Geteilte Telefone und eigenes Handy](#geteilte-telefone-und-eigenes-handy)
 - [Aufbau](#aufbau)
 - [Bauen](#bauen)
 - [CI und Release](#ci-und-release)
@@ -45,17 +45,21 @@ Was die App kann:
 
 | Schritt | So geht’s |
 |---|---|
-| Erster Start | Die App fragt einmal, ob man sich bei der Nextcloud anmelden möchte. „Nein, danke“ wird gemerkt; anmelden geht später über die Einstellungen. |
-| Anmelden (eigenes Handy) | Login der Nextcloud mit dem Rosenweg-Konto im Browser. Die App erhält ein eigenes App-Passwort, nie das eigentliche Passwort. |
+| Anmelden (eigenes Handy) | Beim Öffnen erscheint der gemeinsame Rosenweg-Anmeldeschirm: Rosenweg-Karte hinten ans Telefon halten (NFC) oder „Mit Rosenweg-Konto anmelden“. Keine PIN. Ohne Anmeldung ist die App nicht nutzbar. |
+| Nextcloud-Zugang | kommt nach der Anmeldung als eigenes App-Passwort von der Anlage – nie das eigentliche Passwort. Geht das nicht, Login der Nextcloud im Browser. |
 | Foto oder Video | aufnehmen wie gewohnt – die Aufnahme wandert von selbst nach `Persönlich/Kamera`. |
 | Ansehen | Vorschaubild unten rechts antippen. |
 | Aktualisieren (eigenes Handy) | Der Rosenweg Updater bietet neue Versionen an; Android lässt jede Installation bestätigen. |
 
 Ausführlich: [docs/anleitung.md](docs/anleitung.md).
 
-## Geteilte Rosenweg-Telefone
+## Geteilte Telefone und eigenes Handy
 
-Auf den geteilten Telefonen (mit Rosenweg Gerät, Anmeldung per Karte) kommt der Nextcloud-Zugang von Rosenweg Gerät – kein eigener Anmeldeschirm. Rosenweg Gerät installiert die App aus dem App-Katalog der Telefonanlage und hält sie aktuell; der Rosenweg Updater der App bleibt dort still.
+| | Geteiltes Telefon (mit Rosenweg Gerät) | Eigenes Handy |
+|---|---|---|
+| Anmeldung | gilt die Anmeldung von Rosenweg Gerät (Karte am Sperrbildschirm, PIN) – kein eigener Anmeldeschirm | eigene Anmeldung dieser App über den gemeinsamen Anmeldeschirm (Karte oder Rosenweg-Konto, keine PIN); bis zu 20 Sitzungen pro Person |
+| Nextcloud-Zugang | von Rosenweg Gerät | App-Passwort von der Anlage nach der Anmeldung |
+| Installieren und aktualisieren | Rosenweg Gerät aus dem App-Katalog der Telefonanlage | APK von /apps, danach der Rosenweg Updater |
 
 ## Aufbau
 
@@ -63,8 +67,8 @@ Auf den geteilten Telefonen (mit Rosenweg Gerät, Anmeldung per Karte) kommt der
 |---|---|
 | `app/src/main/kotlin/org/fossify/camera/` | Kamera aus Fossify Camera (Kotlin-Namensraum wie im Original) |
 | `…/extensions/Nextcloud.kt` | Rosenweg: Hochladen nach `Persönlich/Kamera`, neuestes Foto aus der Nextcloud |
-| `…/activities/MainActivity.kt`, `SettingsActivity.kt` | Rosenweg-Anpassungen: Hinweis beim ersten Start, Anmelden, Updater |
-| [commons-rosenweg](https://github.com/Rosenweg/commons-rosenweg) | Fossify Commons in der Rosenweg-Fassung (`org.fossify:commons:7.1.3-rosenweg.1`) und Modul `ch.rosenweg4303:cloud` (Nextcloud, Warteschlange, Einstellungen, Updater) |
+| `…/activities/MainActivity.kt`, `SettingsActivity.kt` | Rosenweg-Anpassungen: Anmelden, Updater |
+| [commons-rosenweg](https://github.com/Rosenweg/commons-rosenweg) | Fossify Commons in der Rosenweg-Fassung (`org.fossify:commons:7.1.3-rosenweg.1`) und Modul `ch.rosenweg4303:cloud` (gemeinsamer Anmeldeschirm, Nextcloud, Warteschlange, Einstellungen, Updater) |
 | `assets/logo/` | Logo aus dem Baukasten von rosenweg-basis: Turm, Weg und Rose mit Kamera-Plakette, dazu ein monochromes Designsymbol (Android 13+); die wählbaren Fossify-Symbolfarben gibt es nicht mehr |
 
 Paketname `ch.rosenweg4303.camera`; nur die `applicationId` ist eigen.
