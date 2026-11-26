@@ -1,5 +1,6 @@
 package org.fossify.camera.helpers
 
+import android.annotation.SuppressLint
 import android.Manifest
 import android.location.Location
 import android.location.LocationListener
@@ -42,6 +43,9 @@ class SimpleLocationManager(private val activity: BaseSimpleActivity) {
         return location
     }
 
+    // Rosenweg: Standort-Berechtigungen sind bewusst nicht im Manifest, die Einstellung ist
+    // ausgeblendet (savePhotoVideoLocation = false); dieser Pfad laeuft also nie.
+    @SuppressLint("MissingPermission")
     private fun getLastKnownLocation(): Location? {
         return if (activity.checkLocationPermission()) {
             var accurateLocation: Location? = null

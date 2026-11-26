@@ -441,6 +441,9 @@ class CameraXPreview(
         }
     }
 
+    // Rosenweg: Standort-Berechtigungen sind bewusst nicht im Manifest, die Einstellung ist
+    // ausgeblendet (savePhotoVideoLocation = false); dieser Pfad laeuft also nie.
+    @SuppressLint("MissingPermission")
     private fun requestLocationUpdates() {
         activity.apply {
             if (checkLocationPermission()) {

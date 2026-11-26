@@ -3,6 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:MainActivity.kt$MainActivity$!mIsHardwareShutterHandled &amp;&amp; config.volumeButtonsAsShutter &amp;&amp; (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)</ID>
+    <ID>ComplexCondition:MainActivity.kt$MainActivity$lastMediaId != 0L &amp;&amp; mPreviewUri != null &amp;&amp; lokalVorhanden(mPreviewUri!!) &amp;&amp; lokalNeuerAls(mPreviewUri!!, nc.geaendert)</ID>
     <ID>CyclomaticComplexMethod:CameraXPreview.kt$CameraXPreview$@SuppressLint("MissingPermission", "NewApi") private fun startRecording()</ID>
     <ID>CyclomaticComplexMethod:ImageSaver.kt$ImageSaver$@SuppressLint("RestrictedApi") private fun saveImageToTempFile(): File?</ID>
     <ID>CyclomaticComplexMethod:PhotoProcessor.kt$PhotoProcessor$override fun doInBackground(vararg params: ByteArray): String</ID>
@@ -73,9 +74,11 @@
     <ID>MaxLineLength:CameraErrorHandler.kt$CameraErrorHandler$VideoRecordEvent.Finalize.ERROR_INSUFFICIENT_STORAGE -&gt; context.toast(R.string.video_capture_insufficient_storage_error)</ID>
     <ID>MaxLineLength:ImageUtil.kt$ImageUtil$require(image.format == ImageFormat.YUV_420_888) { "Incorrect image format of the input image proxy: " + image.format }</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$if</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$if (rosenwegAnmeldungNoetig() &amp;&amp; ch.rosenweg4303.cloud.RosenwegAnmeldeSchirm.zeigenFallsNoetig(this, nextcloud = true)) return</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$}</ID>
     <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$it.beGoneIf(settingsUseEnglishHolder.isGone() &amp;&amp; settingsPurchaseThankYouHolder.isGone() &amp;&amp; settingsLanguageHolder.isGone())</ID>
     <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$settingsUseEnglishHolder.beVisibleIf((config.wasUseEnglishToggled || Locale.getDefault().language != "en") &amp;&amp; !isTiramisuPlus())</ID>
+    <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$startActivity(android.content.Intent(this@SettingsActivity, ch.rosenweg4303.cloud.AnmeldenActivity::class.java))</ID>
     <ID>MaxLineLength:ShadowDrawable.kt$ShadowDrawable$if</ID>
     <ID>NestedBlockDepth:ImageQualityManager.kt$ImageQualityManager$fun initSupportedQualities()</ID>
     <ID>NestedBlockDepth:ImageSaver.kt$ImageSaver$private fun copyTempFileToDestination(tempFile: File)</ID>
@@ -88,13 +91,16 @@
     <ID>SwallowedException:BitmapUtils.kt$BitmapUtils$ex: OutOfMemoryError</ID>
     <ID>SwallowedException:CameraXPreview.kt$CameraXPreview$e: Exception</ID>
     <ID>SwallowedException:ImageUtil.kt$ImageUtil$e: IOException</ID>
+    <ID>SwallowedException:MainActivity.kt$MainActivity$e: Exception</ID>
     <ID>SwallowedException:MediaOutputHelper.kt$MediaOutputHelper$e: Exception</ID>
     <ID>SwallowedException:PhotoProcessor.kt$PhotoProcessor$e: Exception</ID>
     <ID>SwallowedException:PhotoProcessor.kt$PhotoProcessor$e: OutOfMemoryError</ID>
     <ID>ThrowsCount:ImageUtil.kt$ImageUtil$@Throws(CodecFailedException::class) private fun cropJpegByteArray( data: ByteArray, cropRect: Rect, @IntRange(from = 1, to = 100) jpegQuality: Int, ): ByteArray</ID>
     <ID>TooGenericExceptionCaught:CameraXPreview.kt$CameraXPreview$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ImageQualityManager.kt$ImageQualityManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MainActivity.kt$MainActivity$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MediaOutputHelper.kt$MediaOutputHelper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Nextcloud.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:PhotoProcessor.kt$PhotoProcessor$e: Exception</ID>
     <ID>TooGenericExceptionCaught:VideoQualityManager.kt$VideoQualityManager$e: Exception</ID>
     <ID>TooManyFunctions:CameraXPreview.kt$CameraXPreview : MyPreviewDefaultLifecycleObserver</ID>
