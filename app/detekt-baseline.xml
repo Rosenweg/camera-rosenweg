@@ -74,6 +74,7 @@
     <ID>MaxLineLength:CameraErrorHandler.kt$CameraErrorHandler$VideoRecordEvent.Finalize.ERROR_INSUFFICIENT_STORAGE -&gt; context.toast(R.string.video_capture_insufficient_storage_error)</ID>
     <ID>MaxLineLength:ImageUtil.kt$ImageUtil$require(image.format == ImageFormat.YUV_420_888) { "Incorrect image format of the input image proxy: " + image.format }</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$if</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$if (rosenwegAnmeldungNoetig() &amp;&amp; ch.rosenweg4303.cloud.RosenwegAnmeldeSchirm.zeigenFallsNoetig(this, nextcloud = true)) return</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$}</ID>
     <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$it.beGoneIf(settingsUseEnglishHolder.isGone() &amp;&amp; settingsPurchaseThankYouHolder.isGone() &amp;&amp; settingsLanguageHolder.isGone())</ID>
     <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$settingsUseEnglishHolder.beVisibleIf((config.wasUseEnglishToggled || Locale.getDefault().language != "en") &amp;&amp; !isTiramisuPlus())</ID>
