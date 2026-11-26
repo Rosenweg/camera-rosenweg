@@ -73,6 +73,8 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
     // Rosenweg: neuestes Foto/Video aus der Nextcloud fuer das Vorschaubild
     private var mNcNeueste: ch.rosenweg4303.cloud.Eintrag? = null
     private var mRosenwegGestartet = false
+    /** Rosenweg: Kamera wartet auf die Anmeldung (eigenes Handy), wird in onResume nachgeholt. */
+    private var mRosenwegKameraOffen = false
     private var mIsHardwareShutterHandled = false
     private var mLastHandledOrientation = 0
     private var countDownTimer: CountDownTimer? = null
@@ -104,7 +106,8 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         appLaunched(BuildConfig.APPLICATION_ID)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         initVariables()
-        tryInitCamera()
+        // Rosenweg: ohne Anmeldung die Kamera (und ihre Berechtigungsfragen) erst nach dem Anmeldeschirm
+        if (rosenwegAnmeldungNoetig()) mRosenwegKameraOffen = true else tryInitCamera()
         supportActionBar?.hide()
         setupOrientationEventListener()
 
@@ -128,6 +131,11 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     override fun onResume() {
         super.onResume()
+        if (rosenwegAnmeldungNoetig() && ch.rosenweg4303.cloud.RosenwegAnmeldeSchirm.zeigenFallsNoetig(this)) return
+        if (mRosenwegKameraOffen) {
+            mRosenwegKameraOffen = false
+            tryInitCamera()
+        }
         if (hasStorageAndCameraPermissions()) {
             val isInPhotoMode = isInPhotoMode()
             setupPreviewImage(isInPhotoMode)
@@ -636,6 +644,19 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         } ?: false
     } catch (e: Exception) {
         false
+    }
+
+    /**
+     * Rosenweg (Stefan 26.11.2026): auf dem eigenen Handy ist die App ohne Anmeldung nicht nutzbar, es
+     * kommt der gemeinsame Anmeldeschirm (commons-rosenweg: Karte oder Rosenweg-Konto, "Zurueck"
+     * schliesst die App). Geteilte Telefone (Rosenweg Geraet): nie, dort gilt dessen Anmeldung.
+     * Nicht, wenn eine andere App ein Foto/Video verlangt (geht ohne Nextcloud), und nicht auf dem
+     * Sperrbildschirm (dort kann der Schirm nicht erscheinen; Kamera-Schnellstart bleibt).
+     */
+    private fun rosenwegAnmeldungNoetig(): Boolean {
+        if (isThirdPartyIntent()) return false
+        if ((getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager).isKeyguardLocked) return false
+        return ch.rosenweg4303.cloud.RosenwegAnmeldung.anmeldungNoetig(this)
     }
 
     /** Rosenweg: Hinweis beim ersten Start und Einstellungen aus der Nextcloud. */
