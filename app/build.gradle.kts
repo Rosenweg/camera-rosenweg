@@ -125,7 +125,8 @@ android {
         )
     }
 
-    namespace = project.property("APP_ID").toString()
+    // Rosenweg: nur die applicationId ist eigen (ch.rosenweg4303.camera); Kotlin-Namensraum wie im Original.
+    namespace = "org.fossify.camera"
 
     lint {
         checkReleaseBuilds = false
@@ -169,6 +170,7 @@ detekt {
 
 dependencies {
     implementation(libs.fossify.commons)
+    implementation(libs.rosenweg.cloud) // Rosenweg: selbst in die Nextcloud hochladen
     implementation(libs.bundles.androidx.camera)
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.exifinterface)

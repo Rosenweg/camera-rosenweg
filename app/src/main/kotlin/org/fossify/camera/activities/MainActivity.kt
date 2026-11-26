@@ -1,5 +1,10 @@
 package org.fossify.camera.activities
 
+import org.fossify.commons.extensions.showErrorToast
+import org.fossify.commons.extensions.toast
+import org.fossify.commons.helpers.ensureBackgroundThread
+import org.fossify.camera.extensions.neuestesAusNextcloud
+import org.fossify.camera.extensions.kameraHochladen
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -65,6 +70,9 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
     private var mPreview: MyPreview? = null
     private var mediaSizeToggleGroup: MaterialButtonToggleGroup? = null
     private var mPreviewUri: Uri? = null
+    // Rosenweg: neuestes Foto/Video aus der Nextcloud fuer das Vorschaubild
+    private var mNcNeueste: ch.rosenweg4303.cloud.Eintrag? = null
+    private var mRosenwegGestartet = false
     private var mIsHardwareShutterHandled = false
     private var mLastHandledOrientation = 0
     private var countDownTimer: CountDownTimer? = null
@@ -300,6 +308,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
     }
 
     private fun initializeCamera(isInPhotoMode: Boolean) {
+        rosenwegStart()
         setContentView(binding.root)
         initButtons()
         initModeSwitcher()
@@ -510,6 +519,25 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
 
     private fun showLastMediaPreview() {
+        // Rosenweg: lokales Bild schon hochgeladen und geloescht -> das Neueste aus der Nextcloud
+        if (mPreviewUri == null || !lokalVorhanden(mPreviewUri!!)) {
+            val foto = isInPhotoMode()
+            ensureBackgroundThread {
+                try {
+                    val nc = neuestesAusNextcloud(foto) ?: mNcNeueste
+                    if (nc == null) {
+                        toast(org.fossify.commons.R.string.no_items_found)
+                        return@ensureBackgroundThread
+                    }
+                    mNcNeueste = nc
+                    val datei = ch.rosenweg4303.cloud.Ablage.lokaleKopie(this, nc.pfad)
+                    runOnUiThread { openPathIntent(datei.absolutePath, false, BuildConfig.APPLICATION_ID) }
+                } catch (e: Exception) {
+                    showErrorToast(e)
+                }
+            }
+            return
+        }
         if (mPreviewUri != null) {
             val path =
                 applicationContext.getRealPathFromURI(mPreviewUri!!) ?: mPreviewUri!!.toString()
@@ -570,13 +598,54 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         val uri =
             if (isPhoto) MediaStore.Images.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val lastMediaId = getLatestMediaId(uri)
-        if (lastMediaId == 0L) {
-            return
+        if (lastMediaId != 0L) {
+            mPreviewUri = Uri.withAppendedPath(uri, lastMediaId.toString())
+            loadLastTakenMedia(mPreviewUri)
         }
+        // Rosenweg: das Neueste aus der Nextcloud (Regel 6) - lokal wird nach dem Hochladen geloescht
+        ensureBackgroundThread {
+            val nc = neuestesAusNextcloud(isPhoto) ?: return@ensureBackgroundThread
+            val (adresse, kopf) = ch.rosenweg4303.cloud.Ablage.vorschau(this, nc) ?: return@ensureBackgroundThread
+            mNcNeueste = nc
+            if (lastMediaId != 0L && mPreviewUri != null && lokalVorhanden(mPreviewUri!!) &&
+                lokalNeuerAls(mPreviewUri!!, nc.geaendert)
+            ) return@ensureBackgroundThread
+            mPreviewUri = null
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                val h = com.bumptech.glide.load.model.LazyHeaders.Builder()
+                kopf.forEach { (k, v) -> h.addHeader(k, v) }
+                Glide.with(this)
+                    .load(com.bumptech.glide.load.model.GlideUrl(adresse, h.build()))
+                    .apply(RequestOptions().circleCrop().diskCacheStrategy(DiskCacheStrategy.NONE))
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(binding.lastPhotoVideoPreview)
+            }
+        }
+    }
 
-        mPreviewUri = Uri.withAppendedPath(uri, lastMediaId.toString())
+    private fun lokalVorhanden(uri: Uri): Boolean = try {
+        contentResolver.openFileDescriptor(uri, "r")?.use { true } ?: false
+    } catch (e: Exception) {
+        false
+    }
 
-        loadLastTakenMedia(mPreviewUri)
+    private fun lokalNeuerAls(uri: Uri, zeitMs: Long): Boolean = try {
+        contentResolver.query(uri, arrayOf(MediaStore.MediaColumns.DATE_MODIFIED), null, null, null)?.use {
+            it.moveToFirst() && it.getLong(0) * 1000 >= zeitMs
+        } ?: false
+    } catch (e: Exception) {
+        false
+    }
+
+    /** Rosenweg: Hinweis beim ersten Start und Einstellungen aus der Nextcloud. */
+    private fun rosenwegStart() {
+        if (mRosenwegGestartet || isThirdPartyIntent()) return
+        mRosenwegGestartet = true
+        val gesperrt = (getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager).isKeyguardLocked
+        if (gesperrt) return // auf dem Sperrbildschirm keine Dialoge und keine Anmeldung
+        ch.rosenweg4303.cloud.Hinweis.beimErstenStart(this, "Deine Fotos und Videos")
+        ch.rosenweg4303.cloud.Einstellungen.abgleichen(this) { recreate() }
     }
 
     private fun loadLastTakenMedia(uri: Uri?) {
@@ -730,6 +799,8 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
     override fun onMediaSaved(uri: Uri) {
         binding.layoutTop.changeResolution.isEnabled = true
         loadLastTakenMedia(uri)
+        // Rosenweg: in den persoenlichen Ordner (nicht bei Aufnahmen fuer andere Apps)
+        if (!isThirdPartyIntent()) kameraHochladen(uri)
         if (isImageCaptureIntent()) {
             Intent().apply {
                 data = uri
@@ -976,7 +1047,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
             setupPreviewImage(true)
             Intent(BROADCAST_REFRESH_MEDIA).apply {
                 putExtra(REFRESH_PATH, path)
-                `package` = "org.fossify.gallery"
+                `package` = "ch.rosenweg4303.gallery"
                 sendBroadcast(this)
             }
         }
